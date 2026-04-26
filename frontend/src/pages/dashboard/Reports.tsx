@@ -55,8 +55,11 @@ const Reports = () => {
                   </div>
                 </dl>
                 <div className="mt-5 flex items-center gap-2">
-                  <Button variant="hero" size="sm" className="flex-1" onClick={() => window.open(api.getReportDownloadUrl(p.plan_id), "_blank")}>
-                    <Download className="h-3.5 w-3.5" />Download Markdown
+                  <Button variant="hero" size="sm" onClick={() => window.open(api.getReportPdfUrl(p.plan_id), "_blank")}>
+                    <Download className="h-3.5 w-3.5" />Download PDF
+                  </Button>
+                  <Button variant="ghost_dark" size="sm" onClick={() => window.open(api.getReportDownloadUrl(p.plan_id), "_blank")}>
+                    <Download className="h-3.5 w-3.5" />Markdown
                   </Button>
                   <Button asChild variant="ghost_dark" size="sm">
                     <Link to={`/dashboard/experiments/${p.plan_id}`}>

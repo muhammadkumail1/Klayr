@@ -9,6 +9,7 @@ sqlalchemy[asyncio]>=2.0.36
 asyncpg>=0.30.0
 redis[asyncio]>=5.2.0
 python-dotenv>=1.0.0
+fpdf2>=2.7.9
 
 # Testing
 pytest>=8.3.0

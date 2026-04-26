@@ -431,6 +431,10 @@ export const api = {
     return `/api/report/${planId}/download`;
   },
 
+  getReportPdfUrl(planId: string): string {
+    return `/api/report/${planId}/pdf`;
+  },
+
   // ---------------------------------------------------------------------------
   // Literature search
   // ---------------------------------------------------------------------------

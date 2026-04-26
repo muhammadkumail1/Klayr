@@ -116,6 +116,7 @@ const ExperimentDetail = () => {
   };
 
   const handleDownloadReport = () => window.open(api.getReportDownloadUrl(planId), "_blank");
+  const handleDownloadPDF = () => window.open(api.getReportPdfUrl(planId), "_blank");
 
   const handleExportJSON = () => {
     if (!plan) return;
@@ -663,9 +664,14 @@ const ExperimentDetail = () => {
                 {reportLoading ? "Generating…" : reportData ? "Regenerate Report" : "Generate Report"}
               </Button>
               {reportData && (
-                <Button variant="ghost_dark" onClick={handleDownloadReport}>
-                  <Download className="h-4 w-4" />Download Markdown
-                </Button>
+                <>
+                  <Button variant="ghost_dark" onClick={handleDownloadPDF}>
+                    <Download className="h-4 w-4" />Download PDF
+                  </Button>
+                  <Button variant="ghost_dark" onClick={handleDownloadReport}>
+                    <Download className="h-4 w-4" />Download Markdown
+                  </Button>
+                </>
               )}
               <Button variant="ghost_dark" onClick={handleExportJSON}>
                 <Download className="h-4 w-4" />Export JSON
