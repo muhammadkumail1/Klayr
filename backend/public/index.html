@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AI Scientist - Experiment Plan Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary) !important;
+            font-size: 1.3rem;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            border-radius: 12px;
+        }
+        
+        .card-header {
+            background: var(--primary);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        .quality-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .quality-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .quality-excellent {
+            background: #d1fae5;
+            color: var(--success);
+        }
+        
+        .quality-good {
+            background: #dbeafe;
+            color: var(--primary);
+        }
+        
+        .quality-fair {
+            background: #fed7aa;
+            color: var(--warning);
+        }
+        
+        .quality-poor {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+        
+        .progress {
+            height: 2rem;
+            background: #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .progress-bar {
+            background: var(--primary);
+        }
+        
+        .event-log {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .event-item {
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            background: white;
+            border-left: 3px solid var(--primary);
+            border-radius: 4px;
+        }
+        
+        .event-complete {
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+        
+        .event-error {
+            border-left-color: var(--danger);
+            color: var(--danger);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+        
+        .protocol-step {
+            background: #f9fafb;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--primary);
+            border-radius: 4px;
+        }
+        
+        .materials-item {
+            background: #fef3c7;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin: 1rem 0;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .timeline-marker {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .plan-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .plan-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .plan-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+        
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #6b7280;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background: none;
+            border-bottom-color: var(--primary);
+        }
+        
+        .feedback-form {
+            background: #eff6ff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1050;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-lg">
+            <span class="navbar-brand">🧪 The AI Scientist</span>
+            <div class="ms-auto text-muted">
+                <small id="health-status">●</small> System
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-main">
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="generate-tab" data-bs-toggle="tab" data-bs-target="#generate" type="button" role="tab">Generate Plan</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">Plan History</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="feedback-tab" data-bs-toggle="tab" data-bs-target="#feedback" type="button" role="tab">Feedback</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="mainTabContent">
+            <!-- Generate Tab -->
+            <div class="tab-pane fade show active" id="generate" role="tabpanel">
+                <!-- Input Section -->
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card mb-4">
+                            <div class="card-header">Enter Your Hypothesis</div>
+                            <div class="card-body">
+                                <form id="hypothesisForm">
+                                    <div class="mb-3">
+                                        <label for="hypothesis" class="form-label">Scientific Hypothesis</label>
+                                        <textarea class="form-control" id="hypothesis" name="hypothesis" rows="3" placeholder="e.g., Does trehalose preserve HeLa cells better than DMSO during cryopreservation?" required></textarea>
+                                        <small class="form-text text-muted">Be specific and testable</small>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="domain" class="form-label">Domain</label>
+                                        <select class="form-select" id="domain" name="domain">
+                                            <option value="cell_biology">Cell Biology</option>
+                                            <option value="molecular_biology">Molecular Biology</option>
+                                            <option value="biochemistry">Biochemistry</option>
+                                            <option value="microbiology">Microbiology</option>
+                                            <option value="genetics">Genetics</option>
+                                            <option value="neuroscience">Neuroscience</option>
+                                            <option value="immunology">Immunology</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <span id="submitText">Generate Plan</span>
+                                            <span id="submitSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progressSection" class="d-none">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="card mb-4">
+                                <div class="card-header">Pipeline Progress</div>
+                                <div class="card-body">
+                                    <div class="progress mb-3">
+                                        <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+                                    </div>
+                                    <p><small id="progressText">Starting pipeline...</small></p>
+                                    <div id="eventLog" class="event-log"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="d-none">
+                    <div class="row">
+                        <div class="col-lg-10 mx-auto">
+                            <!-- Quality Score -->
+                            <div class="card mb-4">
+                                <div class="card-header">Experiment Plan Quality</div>
+                                <div class="card-body text-center">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="quality-score" id="qualityScore">--</div>
+                                            <div id="qualityBadge" class="quality-badge quality-fair">--</div>
+                                        </div>
+                                        <div class="col-md-6 text-start">
+                                            <div id="qualityErrors" style="font-size: 0.9rem; color: #6b7280;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabbed Results -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="resultTabs" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="refined-tab" data-bs-toggle="tab" data-bs-target="#refined" type="button" role="tab">Refined Hypothesis</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="literature-tab" data-bs-toggle="tab" data-bs-target="#literature" type="button" role="tab">Literature</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="protocol-tab" data-bs-toggle="tab" data-bs-target="#protocol" type="button" role="tab">Protocol</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="materials-tab" data-bs-toggle="tab" data-bs-target="#materials" type="button" role="tab">Materials</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="budget-tab" data-bs-toggle="tab" data-bs-target="#budget" type="button" role="tab">Budget</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab">Timeline</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="validation-tab" data-bs-toggle="tab" data-bs-target="#validation" type="button" role="tab">Validation</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="safety-tab" data-bs-toggle="tab" data-bs-target="#safety" type="button" role="tab">Safety</button>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="tab-content card-body">
+                                    <!-- Refined Hypothesis -->
+                                    <div class="tab-pane fade show active" id="refined" role="tabpanel">
+                                        <div id="refinedContent"></div>
+                                    </div>
+
+                                    <!-- Literature -->
+                                    <div class="tab-pane fade" id="literature" role="tabpanel">
+                                        <div id="literatureContent"></div>
+                                    </div>
+
+                                    <!-- Protocol -->
+                                    <div class="tab-pane fade" id="protocol" role="tabpanel">
+                                        <div id="protocolContent"></div>
+                                    </div>
+
+                                    <!-- Materials -->
+                                    <div class="tab-pane fade" id="materials" role="tabpanel">
+                                        <div id="materialsContent"></div>
+                                    </div>
+
+                                    <!-- Budget -->
+                                    <div class="tab-pane fade" id="budget" role="tabpanel">
+                                        <div id="budgetContent"></div>
+                                    </div>
+
+                                    <!-- Timeline -->
+                                    <div class="tab-pane fade" id="timeline" role="tabpanel">
+                                        <div id="timelineContent"></div>
+                                    </div>
+
+                                    <!-- Validation -->
+                                    <div class="tab-pane fade" id="validation" role="tabpanel">
+                                        <div id="validationContent"></div>
+                                    </div>
+
+                                    <!-- Safety -->
+                                    <div class="tab-pane fade" id="safety" role="tabpanel">
+                                        <div id="safetyContent"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="mt-4 text-center">
+                                <button class="btn btn-secondary" id="resetBtn">Generate Another</button>
+                                <button class="btn btn-success" id="downloadBtn">Download PDF</button>
+                                <button class="btn btn-info" id="sharePlanBtn">Save & Share</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-10 mx-auto">
+                        <div class="card">
+                            <div class="card-header">Previous Plans</div>
+                            <div class="card-body">
+                                <div id="plansList" class="plan-list"></div>
+                                <div id="noPlans" class="text-center text-muted py-4">
+                                    <p>No plans yet. Generate one to get started!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Tab -->
+            <div class="tab-pane fade" id="feedback" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header">Submit Feedback</div>
+                            <div class="card-body">
+                                <p class="text-muted mb-4">Your corrections help train the AI to generate better plans.</p>
+                                <form id="feedbackForm" class="feedback-form">
+                                    <div class="mb-3">
+                                        <label for="feedbackPlan" class="form-label">Select Plan</label>
+                                        <select class="form-select" id="feedbackPlan" required>
+                                            <option value="">Choose a plan...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="feedbackSection" class="form-label">Section</label>
+                                        <select class="form-select" id="feedbackSection">
+                                            <option value="protocol">Protocol</option>
+                                            <option value="materials">Materials</option>
+                                            <option value="budget">Budget</option>
+                                            <option value="timeline">Timeline</option>
+                                            <option value="validation">Validation</option>
+                                            <option value="safety">Safety</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="feedbackOriginal" class="form-label">Original Content</label>
+                                        <textarea class="form-control" id="feedbackOriginal" rows="2" placeholder="What was incorrect?" required></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="feedbackCorrection" class="form-label">Your Correction</label>
+                                        <textarea class="form-control" id="feedbackCorrection" rows="2" placeholder="What should it be instead?" required></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100">Submit Feedback</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
