@@ -44,7 +44,7 @@ const DashboardHome = () => {
           <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-center">
             <div>
               <span className="badge-pill bg-card text-primary border border-border">
-                Methodica · Today
+                The AI Scientist · Today
               </span>
               <h1 className="font-serif-display mt-4 text-4xl font-medium leading-[1.05] text-foreground">
                 Welcome back,

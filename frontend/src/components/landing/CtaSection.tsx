@@ -20,7 +20,7 @@ export const CtaSection = () => {
             <h2 className="font-serif-display text-display font-medium text-primary-foreground">
               Start your next experiment
               <br />
-              <span className="italic opacity-90">with Methodica.</span>
+              <span className="italic opacity-90">with The AI Scientist.</span>
             </h2>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">

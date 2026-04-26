@@ -11,7 +11,7 @@ export const CollaborationSection = () => {
             Research should not happen in isolation.
           </h2>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Methodica detects when another researcher is working on a similar idea and
+            The AI Scientist detects when another researcher is working on a similar idea and
             suggests a safe collaboration match — without exposing private project details.
           </p>
           <Button variant="hero" size="lg" className="mt-8">

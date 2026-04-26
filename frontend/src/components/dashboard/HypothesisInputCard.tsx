@@ -129,7 +129,7 @@ export const HypothesisInputCard = () => {
             What is your hypothesis?
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Describe your research question in natural language. Methodica will generate a
+            Describe your research question in natural language. The AI Scientist will generate a
             complete, AI-powered experiment plan in real time.
           </p>
         </div>

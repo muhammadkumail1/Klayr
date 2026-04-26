@@ -30,7 +30,7 @@ export const LandingNavbar = () => {
       )}
     >
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" aria-label="Methodica home">
+        <Link to="/" aria-label="The AI Scientist home">
           <MethodicaLogo />
         </Link>
 

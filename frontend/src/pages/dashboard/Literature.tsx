@@ -22,7 +22,7 @@ const Literature = () => {
       <PageHeader
         eyebrow="Literature Search"
         title="Discover related work"
-        description="Methodica scans PubMed and Semantic Scholar to surface the closest precedents to your hypothesis."
+        description="The AI Scientist scans PubMed and Semantic Scholar to surface the closest precedents to your hypothesis."
       />
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row">

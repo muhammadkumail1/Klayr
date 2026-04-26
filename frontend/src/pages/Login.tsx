@@ -41,7 +41,7 @@ const Login = () => {
               <span className="italic text-primary">to Breakthrough</span>
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-              Methodica is your AI co-scientist that helps you discover, plan,
+              The AI Scientist is your AI co-scientist that helps you discover, plan,
               optimize, and collaborate on better experiments.
             </p>
 
@@ -116,7 +116,7 @@ const Login = () => {
               </form>
 
               <p className="mt-6 text-center text-sm text-muted-foreground">
-                New to Methodica?{" "}
+                New here?{" "}
                 <Link to="/dashboard" className="font-medium text-primary hover:underline">
                   Sign up
                 </Link>
