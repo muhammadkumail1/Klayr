@@ -1,6 +1,7 @@
 """
-GET  /api/plan/{plan_id}  — retrieve a saved experiment plan
-GET  /api/plans           — paginated list of all plans
+GET   /api/plan/{plan_id}           — retrieve a saved experiment plan
+GET   /api/plans                    — paginated list of all plans
+POST  /api/plans/recalculate-scores — recompute quality scores for all plans
 """
 from __future__ import annotations
 
@@ -11,6 +12,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api.dependencies import get_repo
+from domain.pipeline.quality_gate import compute_quality_score
 from domain.ports.experiment_repo import IExperimentRepo
 
 logger = logging.getLogger(__name__)
@@ -49,8 +51,26 @@ async def list_plans(
                 "hypothesis": p.hypothesis[:120],
                 "experiment_domain": p.experiment_domain,
                 "quality_score": p.quality_score,
+                "feedback_incorporated": p.feedback_incorporated,
                 "created_at": p.created_at.isoformat(),
             }
             for p in plans
         ],
     }
+
+
+@router.post("/api/plans/recalculate-scores")
+async def recalculate_quality_scores(
+    repo: Annotated[IExperimentRepo, Depends(get_repo)],
+) -> dict:
+    """Recompute quality scores for all stored plans using the current algorithm."""
+    plans = await repo.list_plans(limit=1000, offset=0)
+    updated = 0
+    for plan in plans:
+        old_score = plan.quality_score
+        plan.quality_score = compute_quality_score(plan)
+        if plan.quality_score != old_score:
+            await repo.save(plan)
+            updated += 1
+    logger.info("Recalculated quality scores: %d/%d plans updated", updated, len(plans))
+    return {"total": len(plans), "updated": updated}
